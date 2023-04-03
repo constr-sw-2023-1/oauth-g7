@@ -6,7 +6,7 @@ Verifique se o volume grupo-7-keycloak-data já existe:
  - docker volume ls
 
 Caso não existir, crie:
-- docker volume create grupo-7-keycloak-data
+- docker volume create --name=grupo-7-keycloak-data
 
 Após, suba o container:
 - docker-compose up
