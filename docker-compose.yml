@@ -21,10 +21,9 @@ services:
     networks:
       - grupo-7
   # REST API    
-  rest-api:
-    restart: on-failure
-    container_name: microservices
-    image: rest-api-ms
+  rest-api-ms:
+    container_name: rest-api-ms
+    image: rest-api
     ports:
       - 3000:3000
     networks:
