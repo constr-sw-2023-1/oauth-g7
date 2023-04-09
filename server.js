@@ -2,13 +2,15 @@ const express = require('express');
 
 // Constants
 const PORT = 3000;
+const app = express();
+
 
 // App
 app.listen(PORT, () => {
   console.log(`Running on http://localhost:${PORT}`);
 });
 
-const app = express();
+// Endpoints
 app.get('/foo', (req, res) => {
   res.json({"foo": "bar"});
 });
