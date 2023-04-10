@@ -20,5 +20,11 @@ services:
       - KEYCLOAK_FRONTEND_URL=http://localhost:8090/auth
     networks:
       - grupo-7
-    depends_on:
-      - keycloak-init      
+  # REST API    
+  rest-api-ms:
+    container_name: rest-api-ms
+    image: rest-api
+    ports:
+      - 3000:3000
+    networks:
+     - grupo-7  
