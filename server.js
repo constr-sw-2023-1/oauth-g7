@@ -1,16 +1,9 @@
 const express = require('express');
-const cors = require("cors");
+const User = require('./src/models/User');
 
 const app = express();
+app.use(express.json());
 
-var corsOptions = {
-    origin: "http://localhost:8090"
-};
+app.use('/', require('./src/routes'));
 
-app.use(express.json()); //Permitir enviar dados no formato json
-app.use(cors());
-
-//Rotas
-app.use('/api', require('./src/routes'));
-
-app.listen(3000); //Aplicação rodará na porta 3000
+app.listen(3001);
