@@ -67,7 +67,7 @@ function listUsers(req, res) {
                     const data = JSON.parse(body);
                     console.log('JSON:',data);
                     res.status(200).send({
-                        message: "Successfully Listed Users",
+                        message: "User listed successfully",
                         users: data
                     });
                 } catch (error) {
@@ -99,15 +99,24 @@ function listUserById(req, res) {
             console.error(error);
             return res.status(500).send({ error: 'Internal Server Error' });
         }
-        try {
-            const data = JSON.parse(body);
-            console.log('JSON:',data);
-            res.status(200).send({
-                message: "User listed successfully",
-                user: data
-            });
-        } catch (error) {
-            console.error(error);
+        const statusCode = response.statusCode;
+        if (statusCode === 200) {
+            try {
+                const data = JSON.parse(body);
+                console.log('JSON:',data);
+                res.status(statusCode).send({
+                    message: "User listed successfully",
+                    user: data
+                });
+            } catch (error) {
+                console.error(error);
+                return res.status(500).send({ error: 'Internal Server Error' });
+            }
+        } else if (statusCode === 401) {
+            return res.status(statusCode).send({ message: 'Invalid Token' });
+        } else if (statusCode === 404) {
+            return res.status(statusCode).send({ message: 'User Not Found' });
+        } else {
             return res.status(500).send({ error: 'Internal Server Error' });
         }
     });
