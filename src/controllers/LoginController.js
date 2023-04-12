@@ -14,7 +14,6 @@ function login(req, res) {
             grant_type: config.grantType,
         },
     };
-    console.log('options:', options);
     request.post(options, (error, response, body) => {
         if (error) {
             console.error(error);
@@ -22,13 +21,18 @@ function login(req, res) {
         }
         try {
             const data = JSON.parse(body);
-            res.status(200).send({
-                token_type: data.token_type,
-                access_token: data.access_token,
-                expires_in: data.expires_in,
-                refresh_token: data.refresh_token,
-                refresh_expires_in: data.refresh_expires_in,
-            });
+            if (data.access_token) {
+                return res.status(200).send({
+                    message: 'Successfully Generated Token',
+                    token_type: data.token_type,
+                    access_token: data.access_token,
+                    expires_in: data.expires_in,
+                    refresh_token: data.refresh_token,
+                    refresh_expires_in: data.refresh_expires_in,
+                });
+            } else {
+                return res.status(401).send({ error: 'Invalid Credentials' });
+            }
         } catch (error) {
             console.error(error);
             return res.status(500).send({ error: 'Internal Server Error' });
