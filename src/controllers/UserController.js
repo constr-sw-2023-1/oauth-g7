@@ -60,16 +60,29 @@ function listUsers(req, res) {
             console.error(error);
             return res.status(500).send({ error: 'Internal Server Error' });
         }
-        try {
-            const data = JSON.parse(body);
-            console.log('JSON:',data);
-            res.status(200).send({
-                message: "Users listed successfully",
-                users: data
-            });
-        } catch (error) {
-            console.error(error);
-            return res.status(500).send({ error: 'Internal Server Error' });
+        const statusCode = response.statusCode;
+        switch (statusCode) {
+            case 200:
+                try {
+                    const data = JSON.parse(body);
+                    console.log('JSON:',data);
+                    res.status(200).send({
+                        message: "Successfully Listed Users",
+                        users: data
+                    });
+                } catch (error) {
+                    console.error(error);
+                    return res.status(500).send({ error: 'Internal Server Error' });
+                }
+                break;
+            case 401:
+                res.status(401).send({ message: 'Invalid Token' });
+                break;
+            case 403:
+                res.status(403).send({ message: 'Forbidden' });
+                break;
+            default:
+                res.status(500).send({ error: 'Internal Server Error' });
         }
     });
 }

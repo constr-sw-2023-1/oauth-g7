@@ -31,7 +31,7 @@ function login(req, res) {
                     refresh_expires_in: data.refresh_expires_in,
                 });
             } else {
-                return res.status(401).send({ error: 'Invalid Credentials' });
+                return res.status(401).send({ message: 'Invalid Credentials' });
             }
         } catch (error) {
             console.error(error);
