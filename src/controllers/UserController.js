@@ -197,11 +197,15 @@ function deleteUser(req, res) {
             return res.status(500).send({ error: 'Internal Server Error' });
         }
         try {
-            console.log(`Status code: ${response.statusCode}`);
-            console.log(`Response body: ${body}`);
-            res.status(200).send({
-                message: "User deleted successfully",
-            });
+            if (response.statusCode === 204) {
+                res.status(204).send({message: "User Deleted Successfully"});
+            } else if (response.statusCode === 404) {
+                res.status(404).send({ error: 'User Not Found' });
+            } else if (response.statusCode === 401) {
+                res.status(401).send({ error: 'Invalid Token' });
+            } else {
+                throw new Error(`Unexpected response status code: ${response.statusCode}`);
+            }
         } catch (error) {
             console.error(error);
             res.status(500).send({ error: 'Internal Server Error' });
