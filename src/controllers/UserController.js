@@ -2,49 +2,64 @@ const request = require('request');
 
 require('dotenv').config();
 const config = require('../config/config');
+const userSchema = require('../models/User');
+
 function createUser(req, res) {
+    const payload = {
+        id: req.body.id,
+        createdTimestamp: req.body.createdTimestamp,
+        username: req.body.username,
+        enabled: req.body.enabled,
+        totp: req.body.totp,
+        emailVerified: req.body.emailVerified,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        disableableCredentialTypes: req.body.disableableCredentialTypes,
+        requiredActions: req.body.requiredActions,
+        notBefore: req.body.notBefore,
+        access: {
+            manageGroupMembership: req.body.access.manageGroupMembership,
+            view: req.body.access.view,
+            mapRoles: req.body.access.mapRoles,
+            impersonate: req.body.access.impersonate,
+            manage: req.body.access.manage,
+        },
+    };
+
+    const { error } = userSchema.validate(payload);
+
+    if (error) {
+        console.error(error);
+        return res.status(400).send({ error: error.details[0].message });
+    }
+
     const options = {
         url: `${config.baseApiUrl}/admin/realms/${config.realm}/users`,
         headers: {
             'Authorization': req.headers.authorization,
             'Content-Type': 'application/json'
         },
-        json: {
-            "createdTimestamp": 1588880747548,
-            "username": "dssssssssds",
-            "enabled": true,
-            "totp": false,
-            "emailVerified": true,
-            "firstName": "dssssss",
-            "lastName": "Stradsndsssge",
-            "email": "drstrangsssssds2@marvel.com",
-            "disableableCredentialTypes": [],
-            "requiredActions": [],
-            "notBefore": 0,
-            "access": {
-                "manageGroupMembership": true,
-                "view": true,
-                "mapRoles": true,
-                "impersonate": true,
-                "manage": true
-            },
-            "realmRoles": [ "mb-user" ]
-        }
+        json: payload
     };
+
     request.post(options, (error, response, body) => {
         if (error) {
             console.error(error);
             return res.status(500).send({ error: 'Internal Server Error' });
         }
-        console.log('HTTP response code:', response.statusCode);
-        try {
-            res.status(200).send({
-                message: "User created successfully",
+
+        if (response.statusCode !== 201) {
+            // Se o status code for diferente de 201 (CREATED), retorna um erro
+            return res.status(response.statusCode).send({
+                error: `Failed to create user. Status code: ${response.statusCode}`,
+                response: body,
             });
-        } catch (error) {
-            console.error(error);
-            res.status(500).send({ error: 'Internal Server Error' });
         }
+        res.status(200).send({
+            message: "User created successfully",
+            response: body,
+        });
     });
 }
 
@@ -129,9 +144,7 @@ function updateUser(req, res) {
             Authorization: req.headers.authorization,
             'Content-Type': 'application/json'
         },
-        json: {
-            "firstName": "Dr. Strange",
-        }
+        json: req.body
     };
     request.put(options, (error, response, body) => {
         if (error) {
@@ -139,13 +152,10 @@ function updateUser(req, res) {
             return res.status(500).send({ error: 'Internal Server Error' });
         }
         try {
-            console.log(`Status code: ${response.statusCode}`);
-            console.log(`Response body: ${body}`);
             res.status(200).send({
                 message: "User updated successfully",
             });
         } catch (error) {
-            console.error(error);
             res.status(500).send({ error: 'Internal Server Error' });
         }
     });

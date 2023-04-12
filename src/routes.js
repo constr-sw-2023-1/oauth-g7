@@ -6,6 +6,8 @@ const LoginController = require('./controllers/LoginController');
 const UserController = require('./controllers/UserController');
 
 routes.post('/login', LoginController.login);
+routes.post('/refreshToken', LoginController.refreshTokens);
+
 routes.post('/users', UserController.createUser);
 routes.get('/users', UserController.listUsers);
 routes.get('/users/:id', UserController.listUserById);
