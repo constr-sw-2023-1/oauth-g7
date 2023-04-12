@@ -27,4 +27,6 @@ services:
     ports:
       - 3000:3000
     networks:
-     - grupo-7  
+     - grupo-7
+    depends_on:
+      - keycloak
