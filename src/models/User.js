@@ -1,27 +1,23 @@
-const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate');
-
-const UserSchema = new mongoose.Schema({
-    client_id: {
-        type: String,
-        required: true,
+const UserSchema = {
+    id: { type: String, required: true },
+    createdTimestamp: { type: Number, required: true },
+    username: { type: String, required: true },
+    enabled: { type: Boolean, required: true },
+    totp: { type: Boolean, required: true },
+    emailVerified: { type: Boolean, required: true },
+    firstName: { type: String },
+    lastName: { type: String },
+    email: { type: String },
+    disableableCredentialTypes: [{ type: String }],
+    requiredActions: [{ type: String }],
+    notBefore: { type: Number },
+    access: {
+        manageGroupMembership: { type: Boolean },
+        view: { type: Boolean },
+        mapRoles: { type: Boolean },
+        impersonate: { type: Boolean },
+        manage: { type: Boolean },
     },
-    username: {
-        type: String,
-        required: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    grant_type: {
-        type: String,
-        required: true,
-    },
-});
+};
 
-UserSchema.plugin(mongoosePaginate);
-
-mongoose.model('User', UserSchema);
-
-module.exports = mongoose.model('User', UserSchema);
+module.exports = UserSchema;

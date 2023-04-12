@@ -1,7 +1,10 @@
 const request = require('request');
+
+require('dotenv').config();
+const config = require('../config/config');
 function createUser(req, res) {
     const options = {
-        url: 'http://localhost:8090/auth/admin/realms/constr-sw-2023-1/users',
+        url: `${config.baseApiUrl}/admin/realms/${config.realm}/users`,
         headers: {
             'Authorization': req.headers.authorization,
             'Content-Type': 'application/json'
@@ -47,7 +50,7 @@ function createUser(req, res) {
 
 function listUsers(req, res) {
     const options = {
-        url: 'http://localhost:8090/auth/admin/realms/constr-sw-2023-1/users',
+        url: `${config.baseApiUrl}/admin/realms/${config.realm}/users`,
         headers: {
             Authorization: req.headers.authorization
         },
@@ -73,7 +76,7 @@ function listUsers(req, res) {
 
 function listUserById(req, res) {
     const options = {
-        url: `http://localhost:8090/auth/admin/realms/constr-sw-2023-1/users/${req.params.id}`,
+        url: `${config.baseApiUrl}/admin/realms/${config.realm}/users/${req.params.id}`,
         headers: {
             Authorization: req.headers.authorization
         },
@@ -99,7 +102,7 @@ function listUserById(req, res) {
 
 function updateUser(req, res) {
     const options = {
-        url: `http://localhost:8090/auth/admin/realms/constr-sw-2023-1/users/${req.params.id}`,
+        url: `${config.baseApiUrl}/admin/realms/${config.realm}/users/${req.params.id}`,
         headers: {
             Authorization: req.headers.authorization,
             'Content-Type': 'application/json'
@@ -128,7 +131,7 @@ function updateUser(req, res) {
 
 function resetPassword(req, res) {
     const options = {
-        url: `http://localhost:8090/auth/admin/realms/constr-sw-2023-1/users/${req.params.id}/reset-password`,
+        url: `${config.baseApiUrl}/admin/realms/${config.realm}/users/${req.params.id}/reset-password`,
         headers: {
             Authorization: req.headers.authorization,
             'Content-Type': 'application/json'
@@ -161,7 +164,7 @@ function resetPassword(req, res) {
 
 function deleteUser(req, res) {
     const options = {
-        url: `http://localhost:8090/auth/admin/realms/constr-sw-2023-1/users/${req.params.id}`,
+        url: `${config.baseApiUrl}/admin/realms/${config.realm}/users/${req.params.id}`,
         headers: {
             Authorization: req.headers.authorization
         }
