@@ -81,5 +81,19 @@ function refreshTokens(req, res) {
     });
 }
 
+function verifyTokenExpiration(req, res, next) {
+    const tokenExpiration = req.session.expires_at;
+    const now = Date.now() / 1000;
 
-module.exports = { login, refreshTokens };
+    if (now > tokenExpiration) {
+        console.log('Token expired, refreshing...');
+        refreshTokens(req, res, () => {
+            console.log('Token refreshed!');
+            next();
+        });
+    } else {
+        next();
+    }
+}
+
+module.exports = { login, refreshTokens, verifyTokenExpiration };

@@ -4,6 +4,7 @@ const session = require('express-session');
 const routes = express.Router();
 const LoginController = require('./controllers/LoginController');
 const UserController = require('./controllers/UserController');
+const {verifyTokenExpiration} = require("./controllers/LoginController");
 
 const memoryStore = new session.MemoryStore();
 routes.use(session({
@@ -14,12 +15,12 @@ routes.use(session({
 }));
 
 routes.post('/login', LoginController.login);
-routes.post('/refreshToken', LoginController.refreshTokens);
-routes.post('/users', UserController.createUser);
-routes.get('/users', UserController.listUsers);
-routes.get('/users/:id', UserController.listUserById);
-routes.put('/users/:id', UserController.updateUser);
-routes.patch('/users/:id', UserController.resetPassword);
-routes.delete('/users/:id', UserController.deleteUser);
+routes.post('/refreshToken', verifyTokenExpiration, LoginController.refreshTokens);
+routes.post('/users', verifyTokenExpiration, UserController.createUser);
+routes.get('/users', verifyTokenExpiration, UserController.listUsers);
+routes.get('/users/:id', verifyTokenExpiration, UserController.listUserById);
+routes.put('/users/:id', verifyTokenExpiration, UserController.updateUser);
+routes.patch('/users/:id', verifyTokenExpiration, UserController.resetPassword);
+routes.delete('/users/:id', verifyTokenExpiration, UserController.deleteUser);
 
 module.exports = routes;
