@@ -44,22 +44,31 @@ function createUser(req, res) {
     };
 
     request.post(options, (error, response, body) => {
-        if (error) {
+        try {
+            switch (response.statusCode) {
+                case 201:
+                    return res.status(201).send({
+                        message: "User created successfully",
+                        response: body,
+                    });
+                case 400:
+                    if (body && body.errorMessage) {
+                        return res.status(400).send({ error: body.errorMessage });
+                    }
+                    return res.status(400).send({ error: "Bad Request" });
+                case 401:
+                    return res.status(401).send({ error: "Unauthorized" });
+                case 403:
+                    return res.status(403).send({ error: "Forbidden" });
+                case 409:
+                    return res.status(409).send({ error: "Username already exists" });
+                default:
+                    throw new Error(`Unexpected response status code: ${response.statusCode}`);
+            }
+        } catch (error) {
             console.error(error);
             return res.status(500).send({ error: 'Internal Server Error' });
         }
-
-        if (response.statusCode !== 201) {
-            // Se o status code for diferente de 201 (CREATED), retorna um erro
-            return res.status(response.statusCode).send({
-                error: `Failed to create user. Status code: ${response.statusCode}`,
-                response: body,
-            });
-        }
-        res.status(200).send({
-            message: "User created successfully",
-            response: body,
-        });
     });
 }
 
