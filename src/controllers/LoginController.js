@@ -3,9 +3,6 @@ const request = require('request');
 require('dotenv').config();
 const config = require('../config/config');
 
-const Keycloak = require('keycloak-connect');
-const keycloak = new Keycloak({}, config);
-
 function login(req, res) {
     const options = {
         url: `${config.baseApiUrl}/realms/${config.realm}/protocol/openid-connect/token`,
@@ -25,6 +22,7 @@ function login(req, res) {
         try {
             const data = JSON.parse(body);
             if (data.access_token) {
+                req.session.refresh_token = data.refresh_token;
                 return res.status(200).send({
                     message: 'Successfully Generated Token',
                     token_type: data.token_type,
@@ -44,7 +42,7 @@ function login(req, res) {
 }
 
 function refreshTokens(req, res) {
-    const refreshToken = localStorage.getItem('refresh_token');
+    const refreshToken = req.session.refresh_token;
     const options = {
         url: `${config.baseApiUrl}/realms/${config.realm}/protocol/openid-connect/token`,
         form: {
@@ -55,7 +53,6 @@ function refreshTokens(req, res) {
         },
     };
 
-    console.log('refreshTokens' + refreshToken);
     request.post(options, (error, response, body) => {
         if (error) {
             console.error(error);
@@ -84,5 +81,19 @@ function refreshTokens(req, res) {
     });
 }
 
+function verifyTokenExpiration(req, res, next) {
+    const tokenExpiration = req.session.expires_at;
+    const now = Date.now() / 1000;
 
-module.exports = { login, refreshTokens };
+    if (now > tokenExpiration) {
+        console.log('Token expired, refreshing...');
+        refreshTokens(req, res, () => {
+            console.log('Token refreshed!');
+            next();
+        });
+    } else {
+        next();
+    }
+}
+
+module.exports = { login, refreshTokens, verifyTokenExpiration };
