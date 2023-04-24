@@ -44,31 +44,21 @@ function createUser(req, res) {
     };
 
     request.post(options, (error, response, body) => {
-        try {
-            switch (response.statusCode) {
-                case 201:
-                    return res.status(201).send({
-                        message: "User created successfully",
-                        response: body,
-                    });
-                case 400:
-                    if (body && body.errorMessage) {
-                        return res.status(400).send({ error: body.errorMessage });
-                    }
-                    return res.status(400).send({ error: "Bad Request" });
-                case 401:
-                    return res.status(401).send({ error: "Unauthorized" });
-                case 403:
-                    return res.status(403).send({ error: "Forbidden" });
-                case 409:
-                    return res.status(409).send({ error: "Username already exists" });
-                default:
-                    throw new Error(`Unexpected response status code: ${response.statusCode}`);
-            }
-        } catch (error) {
+        if (error) {
             console.error(error);
             return res.status(500).send({ error: 'Internal Server Error' });
         }
+
+        if (response.statusCode !== 201) {
+            return res.status(response.statusCode).send({
+                error: `Failed to create user. Status code: ${response.statusCode}`,
+                response: body,
+            });
+        }
+        res.status(201).send({
+            message: "User created successfully",
+            response: body,
+        });
     });
 }
 
@@ -185,7 +175,7 @@ function resetPassword(req, res) {
         json: true
     };
 
-    request.patch(options, (error, response, body) => {
+    request.put(options, (error, response, body) => {
         if (error) {
             console.error(error);
             return res.status(500).send({ error: 'Internal Server Error' });
@@ -210,7 +200,7 @@ function deleteUser(req, res) {
             Authorization: req.headers.authorization
         }
     };
-    request.delete(options, (error, response, body) => {
+    request.delete(options, (error, response) => {
         if (error) {
             console.error(error);
             return res.status(500).send({ error: 'Internal Server Error' });

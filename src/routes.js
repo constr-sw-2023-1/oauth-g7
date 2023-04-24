@@ -1,26 +1,21 @@
-const request = require('request');
 const express = require('express');
-const session = require('express-session');
 const routes = express.Router();
+
 const LoginController = require('./controllers/LoginController');
 const UserController = require('./controllers/UserController');
-const {verifyTokenExpiration} = require("./controllers/LoginController");
-
-const memoryStore = new session.MemoryStore();
-routes.use(session({
-    secret: 'seu-secret',
-    resave: false,
-    saveUninitialized: true,
-    store: memoryStore
-}));
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./docs/swagger.json");
+const {authenticate} = require("./controllers/LoginController");
 
 routes.post('/login', LoginController.login);
-routes.post('/refreshToken', verifyTokenExpiration, LoginController.refreshTokens);
-routes.post('/users', verifyTokenExpiration, UserController.createUser);
-routes.get('/users', verifyTokenExpiration, UserController.listUsers);
-routes.get('/users/:id', verifyTokenExpiration, UserController.listUserById);
-routes.put('/users/:id', verifyTokenExpiration, UserController.updateUser);
-routes.patch('/users/:id', verifyTokenExpiration, UserController.resetPassword);
-routes.delete('/users/:id', verifyTokenExpiration, UserController.deleteUser);
+routes.post('/refreshToken', LoginController.refreshToken);
+routes.post('/users', UserController.createUser);
+routes.get('/users', authenticate, UserController.listUsers);
+routes.get('/users/:id', UserController.listUserById);
+routes.put('/users/:id', UserController.updateUser);
+routes.put('/users/reset-password/:id', UserController.resetPassword);
+routes.delete('/users/:id', UserController.deleteUser);
+
+routes.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 module.exports = routes;
