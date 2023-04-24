@@ -50,13 +50,12 @@ function createUser(req, res) {
         }
 
         if (response.statusCode !== 201) {
-            // Se o status code for diferente de 201 (CREATED), retorna um erro
             return res.status(response.statusCode).send({
                 error: `Failed to create user. Status code: ${response.statusCode}`,
                 response: body,
             });
         }
-        res.status(200).send({
+        res.status(201).send({
             message: "User created successfully",
             response: body,
         });
@@ -176,7 +175,7 @@ function resetPassword(req, res) {
         json: true
     };
 
-    request.patch(options, (error, response, body) => {
+    request.put(options, (error, response, body) => {
         if (error) {
             console.error(error);
             return res.status(500).send({ error: 'Internal Server Error' });
@@ -201,7 +200,7 @@ function deleteUser(req, res) {
             Authorization: req.headers.authorization
         }
     };
-    request.delete(options, (error, response, body) => {
+    request.delete(options, (error, response) => {
         if (error) {
             console.error(error);
             return res.status(500).send({ error: 'Internal Server Error' });
