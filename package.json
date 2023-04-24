@@ -8,11 +8,12 @@
         "start": "node server.js"
     },
     "dependencies": {
+        "cors": "^2.8.5",
         "dotenv": "^16.0.3",
         "express": "^4.16.1",
-        "mongoose": "^7.0.3",
-        "mongoose-paginate": "^5.0.3",
+        "joi": "^17.9.1",
         "request": "^2.88.2",
-        "require": "^2.4.20"
+        "require": "^0.4.4",
+        "swagger-ui-express": "^4.6.2"
     }
 }

@@ -1,23 +1,26 @@
-const UserSchema = {
-    id: { type: String, required: true },
-    createdTimestamp: { type: Number, required: true },
-    username: { type: String, required: true },
-    enabled: { type: Boolean, required: true },
-    totp: { type: Boolean, required: true },
-    emailVerified: { type: Boolean, required: true },
-    firstName: { type: String },
-    lastName: { type: String },
-    email: { type: String },
-    disableableCredentialTypes: [{ type: String }],
-    requiredActions: [{ type: String }],
-    notBefore: { type: Number },
-    access: {
-        manageGroupMembership: { type: Boolean },
-        view: { type: Boolean },
-        mapRoles: { type: Boolean },
-        impersonate: { type: Boolean },
-        manage: { type: Boolean },
-    },
-};
+const Joi = require('joi');
 
-module.exports = UserSchema;
+const userSchema = Joi.object({
+    id: Joi.string(),
+    createdTimestamp: Joi.number(),
+    username: Joi.string().required(),
+    enabled: Joi.boolean(),
+    totp: Joi.boolean(),
+    emailVerified: Joi.boolean(),
+    firstName: Joi.string().allow('').optional(),
+    lastName: Joi.string().allow('').optional(),
+    email: Joi.string().allow('').optional(),
+    disableableCredentialTypes: Joi.array().items(Joi.string()),
+    requiredActions: Joi.array().items(Joi.string()),
+    notBefore: Joi.number(),
+    access: Joi.object({
+        manageGroupMembership: Joi.boolean(),
+        view: Joi.boolean(),
+        mapRoles: Joi.boolean(),
+        impersonate: Joi.boolean(),
+        manage: Joi.boolean()
+    }),
+    realmRoles: Joi.array().items(Joi.string())
+});
+
+module.exports = userSchema;
