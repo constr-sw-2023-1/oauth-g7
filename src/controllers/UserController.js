@@ -181,14 +181,21 @@ function resetPassword(req, res) {
             return res.status(500).send({ error: 'Internal Server Error' });
         }
         console.log('Response:', response.statusCode, body);
-        if (response.statusCode === 204) {
-            res.status(200).send({
-                message: "User password updated successfully"
-            });
-        } else {
-            res.status(400).send({
-                message: "Failed to update user password"
-            });
+        try{
+            if (response.statusCode === 200) {
+                res.status(200).send({
+                    message: "User password updated successfully"
+                });
+            } else if (response.statusCode === 404) {
+                res.status(404).send({
+                    message: "Requested password not found"
+                });
+            } else {
+                throw new Error(`Unexpected response status code: ${response.statusCode}`);
+            }
+        }  catch (error) {
+            console.error(error);
+            res.status(500).send({ error: 'Internal Server Error' });
         }
     });
 }
